@@ -15,6 +15,7 @@ env = environ.Env(
     GUNICORN_THREADS=(int, 2),
     PAYMENT_GATEWAY=(str, "fake"),
     REPASSE_PERCENTUAL_PADRAO=(int, 80),
+    APP_VERSION=(str, "dev"),
 )
 
 environ.Env.read_env(BASE_DIR / ".env", overwrite=True)
@@ -22,6 +23,7 @@ environ.Env.read_env(BASE_DIR / ".env", overwrite=True)
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+APP_VERSION = env("APP_VERSION")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -117,8 +119,8 @@ REST_FRAMEWORK = {
     ],
     "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
     "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
+        "core.throttles.SharedAnonThrottle",
+        "core.throttles.SharedUserThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
         "anon": "20/min",

@@ -1,20 +1,20 @@
 [importlinter]
-root_package = pagamentos
+root_package = payments
 
 [importlinter:contract:dominio-puro]
-name = pagamentos.dominio não importa Django ou httpx
+name = payments.dominio não importa Django ou httpx
 type = forbidden
-source_modules = pagamentos.dominio
-forbidden_modules = django, httpx, pagamentos.adaptadores
+source_modules = payments.dominio
+forbidden_modules = django, httpx, payments.adaptadores
 
 [importlinter:contract:fronteira-asaas]
 name = Somente adaptadores.asaas conhece o Asaas
 type = forbidden
-source_modules = pagamentos.dominio, pagamentos.aplicacao, pagamentos.api
-forbidden_modules = pagamentos.adaptadores.asaas
+source_modules = payments.dominio, payments.aplicacao, payments.api
+forbidden_modules = payments.adaptadores.asaas
 
 [importlinter:contract:agendamento-isolado]
-name = profissionais e consultas não importam pagamentos
+name = profissionais e consultas não importam payments
 type = forbidden
 source_modules = professionals, appointments
-forbidden_modules = pagamentos
+forbidden_modules = payments

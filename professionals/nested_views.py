@@ -12,6 +12,10 @@ class ProfessionalAppointmentsListView(generics.ListAPIView):
 
     def get_queryset(self):
         profissional_id = self.kwargs["profissional_id"]
+        try:
+            Professional.objects.get(id=profissional_id)
+        except (Professional.DoesNotExist, ValueError):
+            return Appointment.objects.none()
         return Appointment.objects.filter(profissional_id=profissional_id).select_related("profissional")
 
     def list(self, request, *args, **kwargs):

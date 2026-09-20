@@ -3,6 +3,7 @@ FROM python:3.12-slim AS base
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
+    SECRET_KEY=build-only-secret \
     POETRY_VERSION=2.1.3 \
     POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1
@@ -21,7 +22,8 @@ RUN poetry install --only main --no-root
 
 COPY . .
 
-RUN poetry run python manage.py collectstatic --noinput --settings=config.settings.production || true
+RUN mkdir -p /app/staticfiles && \
+    poetry run python manage.py collectstatic --noinput --settings=config.settings.production
 
 FROM python:3.12-slim AS runtime
 

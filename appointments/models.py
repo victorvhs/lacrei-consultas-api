@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils import timezone
 
 from professionals.models import Professional
 
@@ -28,11 +29,10 @@ class Appointment(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
-        from django.utils import timezone
 
         errors = {}
 
-        if not self.pk and self.data_hora <= timezone.now():
+        if self._state.adding and self.data_hora <= timezone.now():
             errors["data_hora"] = "data_hora deve ser no futuro."
 
         if self.valor is not None and self.valor <= 0:
@@ -49,3 +49,10 @@ class Appointment(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+    def can_transition_to(self, new_status):
+        if self.status == new_status:
+            return True
+        if self.status in ["cancelada", "realizada"] and new_status == "agendada":
+            return False
+        return True
