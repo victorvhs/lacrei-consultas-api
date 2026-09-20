@@ -1,5 +1,6 @@
 from datetime import timedelta
 from decimal import Decimal
+from unittest.mock import patch
 from uuid import uuid4
 
 from django.contrib.auth.models import User
@@ -7,6 +8,7 @@ from django.utils import timezone
 from rest_framework.test import APITestCase
 
 from appointments.models import Appointment
+from payments.dominio.excecoes import GatewayIndisponivel
 from payments.models import Pagador, Pagamento
 
 
@@ -39,6 +41,12 @@ class PagadorAPITest(APITestCase):
         response = self.client.post("/api/v1/pagadores/", data, format="json")
         self.assertEqual(response.status_code, 400)
 
+    def test_criar_pagador_cpf_com_digitos_invalidos(self):
+        data = self.valid_data.copy()
+        data["documento"] = "52998224724"
+        response = self.client.post("/api/v1/pagadores/", data, format="json")
+        self.assertEqual(response.status_code, 400)
+
     def test_criar_pagador_cpf_curto(self):
         data = self.valid_data.copy()
         data["documento"] = "123"
@@ -60,6 +68,11 @@ class PagadorAPITest(APITestCase):
         self.client.force_authenticate(user=None)
         response = self.client.get("/api/v1/pagadores/")
         self.assertEqual(response.status_code, 401)
+
+    @patch("payments.adaptadores.fake.FakeGateway.registrar_pagador", side_effect=GatewayIndisponivel("offline"))
+    def test_gateway_indisponivel(self, _register):
+        response = self.client.post("/api/v1/pagadores/", self.valid_data, format="json")
+        self.assertEqual(response.status_code, 500)
 
 
 class PagamentoAPITest(APITestCase):
@@ -254,6 +267,15 @@ class EstornoAPITest(APITestCase):
 
 
 class WebhookAPITest(APITestCase):
+    def test_webhook_payload_invalido_com_token(self):
+        response = self.client.post(
+            "/api/v1/webhooks/asaas/",
+            {"status": "INVALID"},
+            format="json",
+            HTTP_ASAAS_ACCESS_TOKEN="token123",
+        )
+        self.assertEqual(response.status_code, 200)
+
     def test_webhook_sem_token_retorna_401(self):
         response = self.client.post(
             "/api/v1/webhooks/asaas/",

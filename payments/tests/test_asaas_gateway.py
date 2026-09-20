@@ -1,6 +1,7 @@
 from decimal import Decimal
 from uuid import uuid4
 
+import httpx
 import respx
 from django.test import SimpleTestCase
 from httpx import Response
@@ -84,6 +85,36 @@ class AsaasGatewayTest(SimpleTestCase):
             b'{"id":"evt_1","type":"PAYMENT_RECEIVED","payment":{"id":"pay_1","status":"RECEIVED"}}'
         )
         self.assertEqual(notification.status, StatusPagamento.PAGO)
+
+    def test_status_desconhecido_e_payload_invalido(self):
+        self.assertEqual(self.gateway._traduzir_status("NEW_STATUS"), StatusPagamento.PENDENTE)
+        with self.assertRaises(Exception):
+            self.gateway.traduzir_notificacao(b"not-json")
+
+    @respx.mock
+    def test_timeout_e_conexao(self):
+        respx.post("https://asaas.test/v3/customers").mock(side_effect=httpx.TimeoutException("timeout"))
+        with self.assertRaises(GatewayIndisponivel):
+            self.gateway.registrar_pagador(DadosPagador("Nome", "123", "n@example.com"))
+        respx.reset()
+        respx.post("https://asaas.test/v3/payments").mock(side_effect=httpx.ConnectError("down"))
+        with self.assertRaises(GatewayIndisponivel):
+            self.gateway.criar_cobranca(self.pedido)
+
+        respx.reset()
+        respx.get("https://asaas.test/v3/payments").mock(side_effect=httpx.ConnectError("down"))
+        with self.assertRaises(GatewayIndisponivel):
+            self.gateway.buscar_por_referencia(self.reference)
+
+        respx.reset()
+        respx.get("https://asaas.test/v3/payments/pay_1").mock(side_effect=httpx.TimeoutException("timeout"))
+        with self.assertRaises(GatewayIndisponivel):
+            self.gateway.consultar_cobranca("pay_1")
+
+        respx.reset()
+        respx.post("https://asaas.test/v3/payments/pay_1/refund").mock(side_effect=httpx.TimeoutException("timeout"))
+        with self.assertRaises(GatewayIndisponivel):
+            self.gateway.solicitar_estorno("pay_1")
 
     @respx.mock
     def test_mapeia_erros_http(self):

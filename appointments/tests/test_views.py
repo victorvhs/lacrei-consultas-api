@@ -201,6 +201,20 @@ class AppointmentAPITest(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["count"], 0)
 
+    def test_nested_action_nonexistent_professional_returns_404(self):
+        response = self.client.get(f"/api/v1/consultas/por-profissional/{uuid.uuid4()}/")
+        self.assertEqual(response.status_code, 404)
+
+    def test_nested_action_lists_appointments(self):
+        Appointment.objects.create(
+            profissional=self.professional,
+            data_hora=timezone.now() + timedelta(days=1),
+            status="agendada",
+        )
+        response = self.client.get(f"/api/v1/consultas/por-profissional/{self.professional.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 1)
+
     def test_retrieve_appointment(self):
         appointment = Appointment.objects.create(
             profissional=self.professional,

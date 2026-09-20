@@ -72,13 +72,13 @@ class Command(BaseCommand):
                     evento.tentativas += 1
                     if evento.tentativas >= 5:
                         evento.status = "ERRO"
-                    evento.save(update_fields=["tentativas", "status", "atualizado_em"])
+                    evento.save(update_fields=["tentativas", "status"])
 
     def _processar_evento(self, gateway, evento):
         if evento.tipo and evento.tipo not in TIPOS_DE_INTERESSE:
             evento.status = "IGNORADO"
             evento.processado_em = timezone.now()
-            evento.save(update_fields=["status", "processado_em", "atualizado_em"])
+            evento.save(update_fields=["status", "processado_em"])
             return
 
         referencia = evento.corpo.get("payment", {}).get("externalReference")
@@ -99,7 +99,7 @@ class Command(BaseCommand):
         if pagamento is None:
             evento.status = "IGNORADO"
             evento.processado_em = timezone.now()
-            evento.save(update_fields=["status", "processado_em", "atualizado_em"])
+            evento.save(update_fields=["status", "processado_em"])
             return
 
         try:
@@ -114,7 +114,7 @@ class Command(BaseCommand):
         if novo_status == status_atual:
             evento.status = "PROCESSADO"
             evento.processado_em = timezone.now()
-            evento.save(update_fields=["status", "processado_em", "atualizado_em"])
+            evento.save(update_fields=["status", "processado_em"])
             return
 
         if eh_alcancavel(status_atual, novo_status):
@@ -126,7 +126,7 @@ class Command(BaseCommand):
             )
             evento.status = "PROCESSADO"
             evento.processado_em = timezone.now()
-            evento.save(update_fields=["status", "processado_em", "atualizado_em"])
+            evento.save(update_fields=["status", "processado_em"])
         else:
             logger.warning(
                 "divergencia_estado",
