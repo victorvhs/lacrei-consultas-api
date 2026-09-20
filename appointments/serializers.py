@@ -56,8 +56,9 @@ class AppointmentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         profissional_id = validated_data.pop("profissional_id")
         validated_data["profissional_id"] = profissional_id
-        instance = Appointment.objects.create(**validated_data)
+        instance = Appointment(**validated_data)
         instance.clean()
+        instance.save()
         return instance
 
     def update(self, instance, validated_data):
