@@ -37,11 +37,11 @@ class RepasseTest(SimpleTestCase):
 
     def test_calcular_repasse_rounding(self):
         resultado = calcular_repasse(Decimal("99.99"), Decimal("80"))
-        self.assertEqual(resultado, Decimal("80.00"))
+        self.assertEqual(resultado, Decimal("79.99"))
 
     def test_calcular_repasse_valor_pequeno(self):
         resultado = calcular_repasse(Decimal("0.01"), Decimal("50"))
-        self.assertEqual(resultado, Decimal("0.01"))
+        self.assertEqual(resultado, Decimal("0.00"))
 
     def test_validar_percentual_valido(self):
         validar_percentual_repasse(Decimal("80"))

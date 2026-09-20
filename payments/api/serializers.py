@@ -37,15 +37,11 @@ class PagadorSerializer(serializers.ModelSerializer):
         if cpf == cpf[0] * 11:
             raise serializers.ValidationError("CPF inválido.")
         soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
-        d1 = 11 - (soma % 11)
-        if d1 >= 10:
-            d1 = 0
+        d1 = (11 - (soma % 11)) % 10
         if int(cpf[9]) != d1:
             raise serializers.ValidationError("CPF inválido.")
-        soma += d1 * 2
-        d2 = 11 - (soma % 11)
-        if d2 >= 10:
-            d2 = 0
+        soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
+        d2 = (11 - (soma % 11)) % 10
         if int(cpf[10]) != d2:
             raise serializers.ValidationError("CPF inválido.")
         return cpf

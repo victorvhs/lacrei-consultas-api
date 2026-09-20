@@ -19,7 +19,7 @@ class FakeGateway:
     def __init__(self):
         self.pagadores: dict[str, DadosPagador] = {}
         self.cobrancas: dict[str, dict] = {}
-        self.tokens_validos: list[str] = ["fake-token"]
+        self.tokens_validos: list[str] = ["fake-token", "token123"]
         self._proximo_erro: Exception | None = None
         self._proximo_status: StatusPagamento | None = None
 

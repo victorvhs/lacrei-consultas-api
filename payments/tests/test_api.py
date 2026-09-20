@@ -230,6 +230,7 @@ class EstornoAPITest(APITestCase):
         self.assertEqual(response.data["status"], "ESTORNO_EM_ANDAMENTO")
 
     def test_solicitar_estorno_pendente_retorna_422(self):
+        Pagamento.objects.filter(id=self.pagamento.id).update(status="CANCELADO")
         pagamento = Pagamento.objects.create(
             consulta=self.consulta,
             pagador=self.pagador,
@@ -237,7 +238,6 @@ class EstornoAPITest(APITestCase):
             status="PENDENTE",
             id_externo="pay_456",
         )
-        Pagamento.objects.filter(id=self.pagamento.id).update(status="CANCELADO")
         response = self.client.post(
             f"/api/v1/pagamentos/{pagamento.id}/estorno/",
             format="json",
