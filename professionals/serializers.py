@@ -58,6 +58,23 @@ class ProfessionalSerializer(serializers.ModelSerializer):
         telefone = attrs.get("telefone", "")
         if not email and not telefone:
             raise serializers.ValidationError(
-                {"error": {"code": "validation_error", "message": "Profissional precisa de email ou telefone."}}
+                {"email": "Profissional precisa de email ou telefone."}
             )
         return attrs
+
+    def create(self, validated_data):
+        validated_data.pop("endereco", None)
+        validated_data.pop("contato", None)
+        instance = super().create(validated_data)
+        instance.clean()
+        instance.save()
+        return instance
+
+    def update(self, instance, validated_data):
+        validated_data.pop("endereco", None)
+        validated_data.pop("contato", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.clean()
+        instance.save()
+        return instance
