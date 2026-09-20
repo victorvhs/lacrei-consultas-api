@@ -9,9 +9,7 @@ def calcular_repasse(
     valor_liquido = valor_cobranca - taxas_gateway
     if valor_liquido < 0:
         valor_liquido = Decimal("0")
-    repasse = (valor_liquido * percentual_repasse / Decimal("100")).quantize(
-        Decimal("0.01"), rounding=ROUND_HALF_EVEN
-    )
+    repasse = (valor_liquido * percentual_repasse / Decimal("100")).quantize(Decimal("0.01"), rounding=ROUND_HALF_EVEN)
     return repasse
 
 

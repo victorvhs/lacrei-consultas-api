@@ -83,9 +83,11 @@ class PagadorViewSet(viewsets.ModelViewSet):
 
 
 class PagamentoViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Pagamento.objects.select_related("consulta", "pagador").prefetch_related(
-        "repasses", "repasses__profissional"
-    ).all()
+    queryset = (
+        Pagamento.objects.select_related("consulta", "pagador")
+        .prefetch_related("repasses", "repasses__profissional")
+        .all()
+    )
     serializer_class = PagamentoSerializer
     lookup_field = "id"
 

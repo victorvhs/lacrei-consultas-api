@@ -44,18 +44,12 @@ class Pagamento(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    consulta = models.ForeignKey(
-        Appointment, on_delete=models.PROTECT, related_name="pagamentos"
-    )
-    pagador = models.ForeignKey(
-        Pagador, on_delete=models.PROTECT, related_name="pagamentos"
-    )
+    consulta = models.ForeignKey(Appointment, on_delete=models.PROTECT, related_name="pagamentos")
+    pagador = models.ForeignKey(Pagador, on_delete=models.PROTECT, related_name="pagamentos")
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     forma = models.CharField(max_length=32, choices=FORMA_CHOICES, default="PIX")
     vencimento = models.DateField(null=True, blank=True)
-    status = models.CharField(
-        max_length=32, choices=STATUS_CHOICES, default="AGUARDANDO_ENVIO"
-    )
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default="AGUARDANDO_ENVIO")
     gateway = models.CharField(max_length=32, default="fake")
     id_externo = models.CharField(max_length=64, blank=True, default="")
     url_pagamento = models.URLField(max_length=500, blank=True, default="")
@@ -88,18 +82,12 @@ class Repasse(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    pagamento = models.ForeignKey(
-        Pagamento, on_delete=models.CASCADE, related_name="repasses"
-    )
-    profissional = models.ForeignKey(
-        Professional, on_delete=models.PROTECT, related_name="repasses"
-    )
+    pagamento = models.ForeignKey(Pagamento, on_delete=models.CASCADE, related_name="repasses")
+    profissional = models.ForeignKey(Professional, on_delete=models.PROTECT, related_name="repasses")
     carteira_id = models.CharField(max_length=64)
     percentual = models.DecimalField(max_digits=5, decimal_places=2)
     valor_estimado = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(
-        max_length=32, choices=STATUS_CHOICES, default="PENDENTE"
-    )
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default="PENDENTE")
     motivo_recusa = models.TextField(blank=True, default="")
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
@@ -126,13 +114,9 @@ class OutboxMensagem(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     tipo = models.CharField(max_length=32, choices=TIPO_CHOICES)
-    pagamento = models.ForeignKey(
-        Pagamento, on_delete=models.CASCADE, related_name="outbox_mensagens"
-    )
+    pagamento = models.ForeignKey(Pagamento, on_delete=models.CASCADE, related_name="outbox_mensagens")
     versao_payload = models.IntegerField(default=1)
-    status = models.CharField(
-        max_length=16, choices=STATUS_CHOICES, default="PENDENTE"
-    )
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default="PENDENTE")
     tentativas = models.IntegerField(default=0)
     proxima_tentativa_em = models.DateTimeField(null=True, blank=True)
     ultimo_erro = models.TextField(blank=True, default="")
@@ -166,9 +150,7 @@ class EventoRecebido(models.Model):
     event_id = models.CharField(max_length=128)
     tipo = models.CharField(max_length=64, blank=True, default="")
     corpo = models.JSONField(default=dict)
-    status = models.CharField(
-        max_length=16, choices=STATUS_CHOICES, default="RECEBIDO"
-    )
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default="RECEBIDO")
     tentativas = models.IntegerField(default=0)
     recebido_em = models.DateTimeField(auto_now_add=True)
     processado_em = models.DateTimeField(null=True, blank=True)

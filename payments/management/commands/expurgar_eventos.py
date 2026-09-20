@@ -13,9 +13,7 @@ class Command(BaseCommand):
     help = "Expurga eventos recebidos com mais de 90 dias"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--dias", type=int, default=90, help="Dias para expurgo"
-        )
+        parser.add_argument("--dias", type=int, default=90, help="Dias para expurgo")
 
     def handle(self, *args, **options):
         dias = options["dias"]
@@ -23,6 +21,4 @@ class Command(BaseCommand):
 
         count, _ = EventoRecebido.objects.filter(recebido_em__lt=cutoff).delete()
 
-        self.stdout.write(
-            self.style.SUCCESS(f"Expurgo concluido: {count} eventos removidos.")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Expurgo concluido: {count} eventos removidos."))

@@ -50,12 +50,8 @@ class CriarPagamentoTest(TestCase):
         )
         self.assertEqual(pagamento.status, "AGUARDANDO_ENVIO")
         self.assertEqual(pagamento.valor, Decimal("150.00"))
-        self.assertTrue(
-            OutboxMensagem.objects.filter(pagamento=pagamento).exists()
-        )
-        self.assertTrue(
-            Repasse.objects.filter(pagamento=pagamento).exists()
-        )
+        self.assertTrue(OutboxMensagem.objects.filter(pagamento=pagamento).exists())
+        self.assertTrue(Repasse.objects.filter(pagamento=pagamento).exists())
 
     def test_criar_pagamento_consulta_cancelada(self):
         self.consulta.status = "cancelada"
@@ -165,11 +161,7 @@ class SolicitarEstornoTest(TestCase):
         )
         resultado = solicitar_estorno(pagamento.id)
         self.assertEqual(resultado.status, "ESTORNO_EM_ANDAMENTO")
-        self.assertTrue(
-            OutboxMensagem.objects.filter(
-                pagamento=pagamento, tipo="SOLICITAR_ESTORNO"
-            ).exists()
-        )
+        self.assertTrue(OutboxMensagem.objects.filter(pagamento=pagamento, tipo="SOLICITAR_ESTORNO").exists())
         repasse = Repasse.objects.get(pagamento=pagamento)
         self.assertEqual(repasse.status, "CANCELADO")
 
@@ -250,9 +242,7 @@ class AplicarTransicaoTest(TestCase):
             valor=Decimal("150.00"),
             status="AGUARDANDO_ENVIO",
         )
-        aplicar_transicao(
-            pagamento, StatusPagamento.PENDENTE, id_externo="pay_abc"
-        )
+        aplicar_transicao(pagamento, StatusPagamento.PENDENTE, id_externo="pay_abc")
         pagamento.refresh_from_db()
         self.assertEqual(pagamento.id_externo, "pay_abc")
 

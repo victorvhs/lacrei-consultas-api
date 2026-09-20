@@ -26,8 +26,14 @@ class ProfessionalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Professional
         fields = [
-            "id", "nome_social", "profissao", "endereco", "contato",
-            "repasse_configurado", "criado_em", "atualizado_em",
+            "id",
+            "nome_social",
+            "profissao",
+            "endereco",
+            "contato",
+            "repasse_configurado",
+            "criado_em",
+            "atualizado_em",
         ]
         read_only_fields = ["id", "criado_em", "atualizado_em"]
 

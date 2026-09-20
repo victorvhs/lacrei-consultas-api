@@ -76,9 +76,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgres://lacrei:lacrei@db:5432/lacrei")
-}
+DATABASES = {"default": env.db("DATABASE_URL", default="postgres://lacrei:lacrei@db:5432/lacrei")}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

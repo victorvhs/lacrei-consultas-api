@@ -13,12 +13,21 @@ class PagadorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pagador
         fields = [
-            "id", "nome", "documento", "documento_mascarado",
-            "email", "gateway", "criado_em", "atualizado_em",
+            "id",
+            "nome",
+            "documento",
+            "documento_mascarado",
+            "email",
+            "gateway",
+            "criado_em",
+            "atualizado_em",
         ]
         read_only_fields = [
-            "id", "documento_mascarado", "gateway",
-            "criado_em", "atualizado_em",
+            "id",
+            "documento_mascarado",
+            "gateway",
+            "criado_em",
+            "atualizado_em",
         ]
 
     def validate_documento(self, value):
@@ -43,9 +52,7 @@ class PagadorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         cpf = validated_data.pop("documento")
-        validated_data["documento_mascarado"] = (
-            f"***.***.***-{cpf[-2:]}"
-        )
+        validated_data["documento_mascarado"] = f"***.***.***-{cpf[-2:]}"
         return super().create(validated_data)
 
 
@@ -55,9 +62,15 @@ class RepasseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Repasse
         fields = [
-            "id", "profissional_id", "carteira_id",
-            "percentual", "valor_estimado", "status",
-            "motivo_recusa", "criado_em", "atualizado_em",
+            "id",
+            "profissional_id",
+            "carteira_id",
+            "percentual",
+            "valor_estimado",
+            "status",
+            "motivo_recusa",
+            "criado_em",
+            "atualizado_em",
         ]
         read_only_fields = fields
 
@@ -70,10 +83,20 @@ class PagamentoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pagamento
         fields = [
-            "id", "consulta_id", "pagador_id", "valor", "forma",
-            "vencimento", "status", "gateway", "id_externo",
-            "url_pagamento", "motivo_falha", "repasses",
-            "criado_em", "atualizado_em",
+            "id",
+            "consulta_id",
+            "pagador_id",
+            "valor",
+            "forma",
+            "vencimento",
+            "status",
+            "gateway",
+            "id_externo",
+            "url_pagamento",
+            "motivo_falha",
+            "repasses",
+            "criado_em",
+            "atualizado_em",
         ]
         read_only_fields = fields
 

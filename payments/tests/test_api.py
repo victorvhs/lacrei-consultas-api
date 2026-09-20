@@ -21,9 +21,7 @@ class PagadorAPITest(APITestCase):
         }
 
     def test_criar_pagador(self):
-        response = self.client.post(
-            "/api/v1/pagadores/", self.valid_data, format="json"
-        )
+        response = self.client.post("/api/v1/pagadores/", self.valid_data, format="json")
         self.assertEqual(response.status_code, 201)
         self.assertIn("id", response.data)
         self.assertEqual(response.data["nome"], "Joao Silva")
@@ -32,38 +30,28 @@ class PagadorAPITest(APITestCase):
     def test_criar_pagador_cpf_invalido(self):
         data = self.valid_data.copy()
         data["documento"] = "12345678901"
-        response = self.client.post(
-            "/api/v1/pagadores/", data, format="json"
-        )
+        response = self.client.post("/api/v1/pagadores/", data, format="json")
         self.assertEqual(response.status_code, 400)
 
     def test_criar_pagador_cpf_todos_iguais(self):
         data = self.valid_data.copy()
         data["documento"] = "11111111111"
-        response = self.client.post(
-            "/api/v1/pagadores/", data, format="json"
-        )
+        response = self.client.post("/api/v1/pagadores/", data, format="json")
         self.assertEqual(response.status_code, 400)
 
     def test_criar_pagador_cpf_curto(self):
         data = self.valid_data.copy()
         data["documento"] = "123"
-        response = self.client.post(
-            "/api/v1/pagadores/", data, format="json"
-        )
+        response = self.client.post("/api/v1/pagadores/", data, format="json")
         self.assertEqual(response.status_code, 400)
 
     def test_listar_pagadores(self):
-        Pagador.objects.create(
-            nome="P1", documento_mascarado="***.***.***-12", email="p1@test.com"
-        )
+        Pagador.objects.create(nome="P1", documento_mascarado="***.***.***-12", email="p1@test.com")
         response = self.client.get("/api/v1/pagadores/")
         self.assertEqual(response.status_code, 200)
 
     def test_detalhar_pagador(self):
-        pagador = Pagador.objects.create(
-            nome="P1", documento_mascarado="***.***.***-12", email="p1@test.com"
-        )
+        pagador = Pagador.objects.create(nome="P1", documento_mascarado="***.***.***-12", email="p1@test.com")
         response = self.client.get(f"/api/v1/pagadores/{pagador.id}/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["documento_mascarado"], "***.***.***-12")
@@ -249,9 +237,7 @@ class EstornoAPITest(APITestCase):
             status="PENDENTE",
             id_externo="pay_456",
         )
-        Pagamento.objects.filter(id=self.pagamento.id).update(
-            status="CANCELADO"
-        )
+        Pagamento.objects.filter(id=self.pagamento.id).update(status="CANCELADO")
         response = self.client.post(
             f"/api/v1/pagamentos/{pagamento.id}/estorno/",
             format="json",

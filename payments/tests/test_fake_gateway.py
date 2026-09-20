@@ -89,26 +89,24 @@ class FakeGatewayTest(SimpleTestCase):
             self.gw.solicitar_estorno("pay_nao_existe")
 
     def test_autenticar_notificacao_valida(self):
-        self.assertTrue(
-            self.gw.autenticar_notificacao({"asaas-access-token": "fake-token"})
-        )
+        self.assertTrue(self.gw.autenticar_notificacao({"asaas-access-token": "fake-token"}))
 
     def test_autenticar_notificacao_invalida(self):
-        self.assertFalse(
-            self.gw.autenticar_notificacao({"asaas-access-token": "wrong"})
-        )
+        self.assertFalse(self.gw.autenticar_notificacao({"asaas-access-token": "wrong"}))
 
     def test_autenticar_notificacao_sem_token(self):
         self.assertFalse(self.gw.autenticar_notificacao({}))
 
     def test_traduzir_notificacao(self):
-        corpo = json.dumps({
-            "event_id": "evt_123",
-            "tipo": "PAYMENT_UPDATED",
-            "referencia": str(uuid4()),
-            "id_externo": "pay_123",
-            "status": "PENDENTE",
-        }).encode()
+        corpo = json.dumps(
+            {
+                "event_id": "evt_123",
+                "tipo": "PAYMENT_UPDATED",
+                "referencia": str(uuid4()),
+                "id_externo": "pay_123",
+                "status": "PENDENTE",
+            }
+        ).encode()
         notificacao = self.gw.traduzir_notificacao(corpo)
         self.assertEqual(notificacao.event_id, "evt_123")
         self.assertEqual(notificacao.tipo, "PAYMENT_UPDATED")

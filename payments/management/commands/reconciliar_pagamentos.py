@@ -45,9 +45,7 @@ class Command(BaseCommand):
     help = "Reconcilia pagamentos sem atualizacao recente"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--lote", type=int, default=20, help="Tamanho do lote"
-        )
+        parser.add_argument("--lote", type=int, default=20, help="Tamanho do lote")
         parser.add_argument(
             "--minutos",
             type=int,
@@ -92,8 +90,4 @@ class Command(BaseCommand):
                     extra={"erro": str(e), "pagamento_id": str(pagamento.id)},
                 )
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Reconciliacao concluida: {corrigidos} pagamentos corrigidos."
-            )
-        )
+        self.stdout.write(self.style.SUCCESS(f"Reconciliacao concluida: {corrigidos} pagamentos corrigidos."))

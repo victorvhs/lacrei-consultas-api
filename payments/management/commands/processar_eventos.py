@@ -48,9 +48,7 @@ class Command(BaseCommand):
     help = "Processa eventos recebidos (inbox)"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--lote", type=int, default=10, help="Tamanho do lote"
-        )
+        parser.add_argument("--lote", type=int, default=10, help="Tamanho do lote")
 
     def handle(self, *args, **options):
         lote_size = options["lote"]
@@ -105,9 +103,7 @@ class Command(BaseCommand):
             return
 
         try:
-            cobranca = gateway.consultar_cobranca(
-                pagamento.id_externo or id_externo or ""
-            )
+            cobranca = gateway.consultar_cobranca(pagamento.id_externo or id_externo or "")
             novo_status = cobranca.status
         except (GatewayIndisponivel, Exception) as e:
             logger.warning("falha_consulta_gateway", extra={"erro": str(e)})

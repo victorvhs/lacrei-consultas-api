@@ -16,15 +16,11 @@ class RepasseTest(SimpleTestCase):
         self.assertEqual(resultado, Decimal("120.00"))
 
     def test_calcular_repasse_com_taxas(self):
-        resultado = calcular_repasse(
-            Decimal("150.00"), Decimal("80"), taxas_gateway=Decimal("5.00")
-        )
+        resultado = calcular_repasse(Decimal("150.00"), Decimal("80"), taxas_gateway=Decimal("5.00"))
         self.assertEqual(resultado, Decimal("116.00"))
 
     def test_calcular_repasse_taxas_maior_que_valor(self):
-        resultado = calcular_repasse(
-            Decimal("10.00"), Decimal("80"), taxas_gateway=Decimal("15.00")
-        )
+        resultado = calcular_repasse(Decimal("10.00"), Decimal("80"), taxas_gateway=Decimal("15.00"))
         self.assertEqual(resultado, Decimal("0.00"))
 
     def test_calcular_repasse_zero_taxas(self):

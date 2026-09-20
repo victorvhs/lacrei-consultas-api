@@ -26,9 +26,7 @@ def custom_exception_handler(exc, context):
             return Response(response_data, status=response_status)
         return response
 
-    request_id = context.get("request", None) and getattr(
-        context["request"], "request_id", str(uuid.uuid4())
-    )
+    request_id = context.get("request", None) and getattr(context["request"], "request_id", str(uuid.uuid4()))
 
     if isinstance(response.data, dict):
         error_code = "validation_error"

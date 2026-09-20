@@ -41,9 +41,7 @@ class Command(BaseCommand):
     help = "Processa mensagens da outbox e envia para o gateway"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--lote", type=int, default=10, help="Tamanho do lote"
-        )
+        parser.add_argument("--lote", type=int, default=10, help="Tamanho do lote")
 
     def handle(self, *args, **options):
         lote_size = options["lote"]
@@ -88,9 +86,7 @@ class Command(BaseCommand):
         pagamento = msg.pagamento
         pagador = pagamento.pagador
 
-        repasses = list(
-            Repasse.objects.filter(pagamento=pagamento).select_related("profissional")
-        )
+        repasses = list(Repasse.objects.filter(pagamento=pagamento).select_related("profissional"))
 
         from payments.portas import PedidoCobranca, RepasseDTO
 
@@ -181,13 +177,16 @@ class Command(BaseCommand):
             msg.ultimo_erro = erro
             import random
 
-            backoff = min(60 * (2 ** msg.tentativas), 3600)
+            backoff = min(60 * (2**msg.tentativas), 3600)
             jitter = random.randint(0, 30)
             msg.proxima_tentativa_em = timezone.now() + timedelta(seconds=backoff + jitter)
         msg.save(
             update_fields=[
-                "status", "tentativas", "ultimo_erro",
-                "proxima_tentativa_em", "atualizado_em",
+                "status",
+                "tentativas",
+                "ultimo_erro",
+                "proxima_tentativa_em",
+                "atualizado_em",
             ]
         )
 

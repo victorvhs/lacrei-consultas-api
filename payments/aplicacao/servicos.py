@@ -48,9 +48,7 @@ def criar_pagamento(
 
     validar_percentual_repasse(Decimal(str(percentual_repasse)))
 
-    valor_estimado = calcular_repasse(
-        consulta.valor, Decimal(str(percentual_repasse))
-    )
+    valor_estimado = calcular_repasse(consulta.valor, Decimal(str(percentual_repasse)))
 
     with transaction.atomic():
         pagamento = Pagamento.objects.create(
@@ -84,9 +82,7 @@ def solicitar_estorno(pagamento_id: UUID) -> Pagamento:
     status_atual = StatusPagamento(pagamento.status)
 
     if not pode_estornar(status_atual):
-        raise RegraPagamentoViolada(
-            "Estorno apenas de pagamento CONFIRMADO ou PAGO."
-        )
+        raise RegraPagamentoViolada("Estorno apenas de pagamento CONFIRMADO ou PAGO.")
 
     with transaction.atomic():
         pagamento.status = StatusPagamento.ESTORNO_EM_ANDAMENTO.value
@@ -97,9 +93,7 @@ def solicitar_estorno(pagamento_id: UUID) -> Pagamento:
             pagamento=pagamento,
         )
 
-        Repasse.objects.filter(pagamento=pagamento).update(
-            status=StatusRepasse.CANCELADO.value
-        )
+        Repasse.objects.filter(pagamento=pagamento).update(status=StatusRepasse.CANCELADO.value)
 
     return pagamento
 
@@ -130,13 +124,9 @@ def aplicar_transicao(
     if url_pagamento and not pagamento.url_pagamento:
         pagamento.url_pagamento = url_pagamento
 
-    pagamento.save(
-        update_fields=["status", "id_externo", "url_pagamento", "atualizado_em"]
-    )
+    pagamento.save(update_fields=["status", "id_externo", "url_pagamento", "atualizado_em"])
 
     if novo_status in (StatusPagamento.CONFIRMADO, StatusPagamento.PAGO):
-        Repasse.objects.filter(pagamento=pagamento).update(
-            status=StatusRepasse.CONCLUIDO.value
-        )
+        Repasse.objects.filter(pagamento=pagamento).update(status=StatusRepasse.CONCLUIDO.value)
 
     return True
