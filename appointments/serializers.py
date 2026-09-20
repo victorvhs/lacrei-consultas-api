@@ -11,8 +11,13 @@ class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = [
-            "id", "profissional_id", "data_hora", "status", "valor",
-            "criado_em", "atualizado_em",
+            "id",
+            "profissional_id",
+            "data_hora",
+            "status",
+            "valor",
+            "criado_em",
+            "atualizado_em",
         ]
         read_only_fields = ["id", "criado_em", "atualizado_em"]
 
@@ -40,9 +45,7 @@ class AppointmentSerializer(serializers.ModelSerializer):
             if self.instance:
                 duplicate = duplicate.exclude(pk=self.instance.pk)
             if duplicate.exists():
-                raise serializers.ValidationError(
-                    {"data_hora": "Já existe consulta não cancelada neste horário."}
-                )
+                raise serializers.ValidationError({"data_hora": "Já existe consulta não cancelada neste horário."})
 
         valor = attrs.get("valor")
         if valor is not None and valor <= 0:

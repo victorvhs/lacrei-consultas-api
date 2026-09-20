@@ -26,8 +26,14 @@ class ProfessionalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Professional
         fields = [
-            "id", "nome_social", "profissao", "endereco", "contato",
-            "repasse_configurado", "criado_em", "atualizado_em",
+            "id",
+            "nome_social",
+            "profissao",
+            "endereco",
+            "contato",
+            "repasse_configurado",
+            "criado_em",
+            "atualizado_em",
         ]
         read_only_fields = ["id", "criado_em", "atualizado_em"]
 
@@ -57,9 +63,7 @@ class ProfessionalSerializer(serializers.ModelSerializer):
         email = attrs.get("email", "")
         telefone = attrs.get("telefone", "")
         if not email and not telefone:
-            raise serializers.ValidationError(
-                {"email": "Profissional precisa de email ou telefone."}
-            )
+            raise serializers.ValidationError({"email": "Profissional precisa de email ou telefone."})
         return attrs
 
     def create(self, validated_data):

@@ -41,6 +41,7 @@ class AppointmentModelTest(TestCase):
         )
 
         from django.core.exceptions import ValidationError
+
         with self.assertRaises(ValidationError) as ctx:
             appointment.clean()
         self.assertIn("data_hora", ctx.exception.message_dict)
@@ -54,6 +55,7 @@ class AppointmentModelTest(TestCase):
         )
 
         from django.core.exceptions import ValidationError
+
         with self.assertRaises(ValidationError) as ctx:
             appointment.clean()
         self.assertIn("valor", ctx.exception.message_dict)
@@ -67,6 +69,7 @@ class AppointmentModelTest(TestCase):
         )
 
         from django.core.exceptions import ValidationError
+
         with self.assertRaises(ValidationError) as ctx:
             appointment.clean()
         self.assertIn("valor", ctx.exception.message_dict)
@@ -97,6 +100,7 @@ class AppointmentModelTest(TestCase):
         )
 
         from django.core.exceptions import ValidationError
+
         with self.assertRaises(ValidationError) as ctx:
             duplicate.clean()
         self.assertIn("data_hora", ctx.exception.message_dict)

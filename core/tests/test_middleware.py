@@ -44,6 +44,7 @@ class HealthCheckMiddlewareTest(TestCase):
 
         def mock_response(r):
             from django.http import HttpResponse
+
             return HttpResponse("OK")
 
         middleware = HealthCheckMiddleware(mock_response)
@@ -88,6 +89,7 @@ class AccessLogMiddlewareTest(TestCase):
         request.user = type("User", (), {"id": 1})()
 
         from django.http import HttpResponse
+
         middleware = AccessLogMiddleware(lambda r: HttpResponse("OK"))
 
         with self.assertLogs("access", level="INFO") as cm:

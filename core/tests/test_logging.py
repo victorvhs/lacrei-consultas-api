@@ -48,6 +48,7 @@ class JSONFormatterTest(SimpleTestCase):
             raise ValueError("Test error")
         except ValueError:
             import sys
+
             exc_info = sys.exc_info()
 
         record = logging.LogRecord(

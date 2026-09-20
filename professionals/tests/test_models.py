@@ -10,6 +10,7 @@ class SanitizeTextTest(TestCase):
 
     def test_normalizes_unicode(self):
         import unicodedata
+
         value = unicodedata.normalize("NFD", "café")
         result = sanitize_text(value)
         self.assertEqual(result, "café")
