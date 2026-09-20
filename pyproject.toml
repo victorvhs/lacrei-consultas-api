@@ -43,6 +43,9 @@ line-length = 120
 select = ["E", "F", "I", "N", "W", "UP"]
 ignore = ["N818", "UP042"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["appointments", "config", "core", "payments", "professionals"]
+
 [tool.coverage.run]
 source = ["."]
 omit = ["*/migrations/*", "*/tests/*", "manage.py", "config/wsgi.py", "config/asgi.py"]

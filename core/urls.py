@@ -1,7 +1,8 @@
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from professionals.nested_views import ProfessionalAppointmentsListView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from professionals.nested_views import ProfessionalAppointmentsListView
 
 urlpatterns = [
     path("auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
