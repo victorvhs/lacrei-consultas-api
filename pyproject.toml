@@ -29,7 +29,7 @@ ruff = "^0.16"
 coverage = "^7.6"
 pip-audit = "^2.7"
 import-linter = "^2.0"
-respx = "^0.21"
+respx = "^0.23"
 
 [build-system]
 requires = ["poetry-core>=2.0"]
