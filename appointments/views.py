@@ -16,6 +16,12 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         from django.utils.dateparse import parse_datetime
 
+        def parse_query_datetime(value):
+            # A raw '+' in a query string is decoded as a space by HTTP clients.
+            if "T" in value and " " in value:
+                value = value.replace(" ", "+", 1)
+            return parse_datetime(value)
+
         qs = super().get_queryset()
         profissional_id = self.request.query_params.get("profissional_id")
         status_filter = self.request.query_params.get("status")
@@ -31,11 +37,11 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         if status_filter:
             qs = qs.filter(status=status_filter)
         if data_inicio:
-            parsed_inicio = parse_datetime(data_inicio)
+            parsed_inicio = parse_query_datetime(data_inicio)
             if parsed_inicio:
                 qs = qs.filter(data_hora__gte=parsed_inicio)
         if data_fim:
-            parsed_fim = parse_datetime(data_fim)
+            parsed_fim = parse_query_datetime(data_fim)
             if parsed_fim:
                 qs = qs.filter(data_hora__lte=parsed_fim)
 

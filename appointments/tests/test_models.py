@@ -34,9 +34,10 @@ class AppointmentModelTest(TestCase):
         self.assertEqual(appointment.status, "agendada")
 
     def test_rejects_past_date_on_create(self):
+        past_date = timezone.now() - timedelta(days=2)
         appointment = Appointment(
             profissional=self.professional,
-            data_hora=timezone.now() - timedelta(days=1),
+            data_hora=past_date,
             status="agendada",
         )
 

@@ -89,13 +89,17 @@ class AppointmentAPITest(APITestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_create_appointment_duplicate_time(self):
+        same_time = timezone.now() + timedelta(days=1)
         Appointment.objects.create(
             profissional=self.professional,
-            data_hora=timezone.now() + timedelta(days=1),
+            data_hora=same_time,
             status="agendada",
         )
 
-        response = self.client.post("/api/v1/consultas/", self.valid_data, format="json")
+        data = self.valid_data.copy()
+        data["data_hora"] = same_time.isoformat()
+
+        response = self.client.post("/api/v1/consultas/", data, format="json")
 
         self.assertEqual(response.status_code, 400)
 
@@ -182,8 +186,8 @@ class AppointmentAPITest(APITestCase):
         Appointment.objects.create(profissional=self.professional, data_hora=date2, status="agendada")
         Appointment.objects.create(profissional=self.professional, data_hora=date3, status="agendada")
 
-        data_inicio = (timezone.now() + timedelta(days=2)).isoformat()
-        data_fim = (timezone.now() + timedelta(days=6)).isoformat()
+        data_inicio = (timezone.now() + timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S%z")
+        data_fim = (timezone.now() + timedelta(days=6)).strftime("%Y-%m-%dT%H:%M:%S%z")
 
         response = self.client.get(f"/api/v1/consultas/?data_inicio={data_inicio}&data_fim={data_fim}")
 

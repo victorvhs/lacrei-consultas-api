@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 
 from .models import Professional
@@ -19,8 +20,8 @@ class ContatoSerializer(serializers.Serializer):
 
 
 class ProfessionalSerializer(serializers.ModelSerializer):
-    endereco = EnderecoSerializer(write_only=True)
-    contato = ContatoSerializer(write_only=True)
+    endereco = EnderecoSerializer(write_only=True, required=False)
+    contato = ContatoSerializer(write_only=True, required=False)
     repasse_configurado = serializers.SerializerMethodField()
 
     class Meta:
@@ -65,9 +66,14 @@ class ProfessionalSerializer(serializers.ModelSerializer):
         return rep
 
     def validate(self, attrs):
-        contato = attrs.get("contato", {})
-        email = contato.get("email", "")
-        telefone = contato.get("telefone", "")
+        contato = attrs.get("contato")
+        if contato is None and self.instance:
+            email = self.instance.email
+            telefone = self.instance.telefone
+        else:
+            contato = contato or {}
+            email = contato.get("email", "")
+            telefone = contato.get("telefone", "")
         if not email and not telefone:
             raise serializers.ValidationError({"contato": {"email": ["Profissional precisa de email ou telefone."]}})
         return attrs
@@ -87,7 +93,10 @@ class ProfessionalSerializer(serializers.ModelSerializer):
         validated_data["telefone"] = contato.get("telefone", "")
 
         instance = Professional(**validated_data)
-        instance.clean()
+        try:
+            instance.clean()
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
         instance.save()
         return instance
 
@@ -108,6 +117,9 @@ class ProfessionalSerializer(serializers.ModelSerializer):
                 if hasattr(instance, attr):
                     setattr(instance, attr, value)
 
-        instance.clean()
+        try:
+            instance.clean()
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
         instance.save()
         return instance

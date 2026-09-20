@@ -32,7 +32,7 @@ class Appointment(models.Model):
 
         errors = {}
 
-        if not self.pk and self.data_hora <= timezone.now():
+        if self._state.adding and self.data_hora <= timezone.now():
             errors["data_hora"] = "data_hora deve ser no futuro."
 
         if self.valor is not None and self.valor <= 0:
