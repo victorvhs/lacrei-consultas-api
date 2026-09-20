@@ -143,11 +143,11 @@ jobs:
 
       - name: Build release compose
         run: |
-          docker compose -f docker-compose.release.yml build api
-          docker compose -f docker-compose.release.yml up -d db
+          docker build -t lacrei-saude:${{ github.sha }} .
+          APP_IMAGE=lacrei-saude:${{ github.sha }} docker compose -f docker-compose.release.yml up -d db
           sleep 10
-          docker compose -f docker-compose.release.yml run migrate
-          docker compose -f docker-compose.release.yml up -d api
+          APP_IMAGE=lacrei-saude:${{ github.sha }} docker compose -f docker-compose.release.yml run --rm migrate
+          APP_IMAGE=lacrei-saude:${{ github.sha }} docker compose -f docker-compose.release.yml up -d api
           sleep 5
 
       - name: Smoke test
@@ -162,7 +162,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: docker compose -f docker-compose.release.yml down -v
+        run: APP_IMAGE=lacrei-saude:${{ github.sha }} docker compose -f docker-compose.release.yml down -v
 
   publish:
     name: Publish to GHCR
