@@ -29,7 +29,7 @@ class AppointmentModelTest(TestCase):
             valor=150.00,
         )
         appointment.clean()
-        
+
         self.assertIsNotNone(appointment.id)
         self.assertEqual(appointment.status, "agendada")
 
@@ -39,7 +39,7 @@ class AppointmentModelTest(TestCase):
             data_hora=timezone.now() - timedelta(days=1),
             status="agendada",
         )
-        
+
         from django.core.exceptions import ValidationError
         with self.assertRaises(ValidationError) as ctx:
             appointment.clean()
@@ -52,7 +52,7 @@ class AppointmentModelTest(TestCase):
             status="agendada",
             valor=-10.00,
         )
-        
+
         from django.core.exceptions import ValidationError
         with self.assertRaises(ValidationError) as ctx:
             appointment.clean()
@@ -65,7 +65,7 @@ class AppointmentModelTest(TestCase):
             status="agendada",
             valor=0,
         )
-        
+
         from django.core.exceptions import ValidationError
         with self.assertRaises(ValidationError) as ctx:
             appointment.clean()
@@ -78,24 +78,24 @@ class AppointmentModelTest(TestCase):
             status="agendada",
         )
         appointment.clean()
-        
+
         self.assertIsNone(appointment.valor)
 
     def test_rejects_duplicate_non_cancelled(self):
         time = timezone.now() + timedelta(days=1)
-        
+
         Appointment.objects.create(
             profissional=self.professional,
             data_hora=time,
             status="agendada",
         )
-        
+
         duplicate = Appointment(
             profissional=self.professional,
             data_hora=time,
             status="agendada",
         )
-        
+
         from django.core.exceptions import ValidationError
         with self.assertRaises(ValidationError) as ctx:
             duplicate.clean()
@@ -103,29 +103,29 @@ class AppointmentModelTest(TestCase):
 
     def test_allows_duplicate_if_cancelled(self):
         time = timezone.now() + timedelta(days=1)
-        
+
         Appointment.objects.create(
             profissional=self.professional,
             data_hora=time,
             status="cancelada",
         )
-        
+
         new_appointment = Appointment(
             profissional=self.professional,
             data_hora=time,
             status="agendada",
         )
         new_appointment.clean()
-        
+
     def test_allows_same_time_different_professional(self):
         time = timezone.now() + timedelta(days=1)
-        
+
         Appointment.objects.create(
             profissional=self.professional,
             data_hora=time,
             status="agendada",
         )
-        
+
         other_professional = Professional.objects.create(
             nome_social="Bruno Santos",
             profissao="Doctor",
@@ -137,7 +137,7 @@ class AppointmentModelTest(TestCase):
             cep="01001000",
             email="bruno@example.com",
         )
-        
+
         new_appointment = Appointment(
             profissional=other_professional,
             data_hora=time,

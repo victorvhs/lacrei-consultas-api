@@ -1,4 +1,4 @@
-import os
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -130,8 +130,6 @@ REST_FRAMEWORK = {
     },
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
-
-from datetime import timedelta
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
