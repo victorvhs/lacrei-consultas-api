@@ -1,0 +1,44 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to rollback"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+      tag:
+        description: "Docker image tag to rollback to (e.g., sha-abc1234)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  rollback:
+    name: Rollback ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        if: vars.AWS_DEPLOY_ENABLED == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: sa-east-1
+
+      - name: Rollback to ${{ inputs.tag }}
+        run: |
+          echo "Rolling back ${{ inputs.environment }} to ${{ inputs.tag }}"
+          echo "This would update the ECS task definition or deployment"
+
+      - name: Verify health
+        run: |
+          echo "Health check verification would run here"

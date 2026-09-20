@@ -1,0 +1,15 @@
+doc/
+infra/
+.github/
+asaas_simulator/
+spec/
+*.env
+.env*
+!.env.example
+.git
+.gitignore
+__pycache__
+*.pyc
+.coverage
+htmlcov
+.pytest_cache

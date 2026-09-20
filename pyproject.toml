@@ -1,0 +1,51 @@
+[project]
+name = "lacrei-saude"
+version = "0.1.0"
+description = "API de Gerenciamento de Consultas Médicas - Lacrei Saúde"
+authors = [
+    {name = "Lacrei Saúde", email = "dev@lacreisaude.com.br"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "django (>=5.2,<5.3)",
+    "djangorestframework (>=3.15,<4.0)",
+    "djangorestframework-simplejwt (>=5.3,<6.0)",
+    "django-cors-headers (>=4.4,<5.0)",
+    "django-filter (>=24.2,<25.0)",
+    "django-environ (>=0.11,<1.0)",
+    "whitenoise (>=6.7,<7.0)",
+    "psycopg[binary] (>=3.2,<4.0)",
+    "gunicorn (>=22.0,<23.0)",
+    "httpx (>=0.27,<1.0)",
+    "drf-spectacular (>=0.27,<1.0)",
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6"
+coverage = "^7.6"
+pip-audit = "^2.7"
+import-linter = "^2.0"
+respx = "^0.21"
+
+[build-system]
+requires = ["poetry-core>=2.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.coverage.run]
+source = ["."]
+omit = ["*/migrations/*", "*/tests/*", "manage.py", "config/wsgi.py", "config/asgi.py"]
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true
