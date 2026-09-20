@@ -34,16 +34,16 @@ class AsaasGatewayTest(SimpleTestCase):
         # Create the client inside each respx context so httpx is intercepted.
         return AsaasGateway("https://asaas.test", "api-key", ["token123"])
 
-    @respx.mock
+    @respx.mock(base_url="https://asaas.test")
     def test_registrar_pagador(self):
-        route = respx.post("https://asaas.test/v3/customers").mock(return_value=Response(200, json={"id": "cus_1"}))
+        route = respx.post("/v3/customers").mock(return_value=Response(200, json={"id": "cus_1"}))
         result = self.gateway.registrar_pagador(DadosPagador("Nome", "123", "n@example.com"))
         self.assertEqual(result, "cus_1")
         self.assertTrue(route.called)
 
-    @respx.mock
+    @respx.mock(base_url="https://asaas.test")
     def test_criar_cobranca(self):
-        respx.post("https://asaas.test/v3/payments").mock(
+        respx.post("/v3/payments").mock(
             return_value=Response(
                 200,
                 json={
@@ -58,23 +58,23 @@ class AsaasGatewayTest(SimpleTestCase):
         self.assertEqual(result.id_externo, "pay_1")
         self.assertEqual(result.status, StatusPagamento.PENDENTE)
 
-    @respx.mock
+    @respx.mock(base_url="https://asaas.test")
     def test_buscar_e_consultar_cobranca(self):
-        respx.get("https://asaas.test/v3/payments").mock(
+        respx.get("/v3/payments").mock(
             return_value=Response(200, json={"data": [{"id": "pay_1", "status": "RECEIVED", "value": 100}]})
         )
         result = self.gateway.buscar_por_referencia(self.reference)
         self.assertEqual(result.status, StatusPagamento.PAGO)
 
-        respx.get("https://asaas.test/v3/payments/pay_1").mock(
+        respx.get("/v3/payments/pay_1").mock(
             return_value=Response(200, json={"id": "pay_1", "status": "OVERDUE", "value": 100})
         )
         result = self.gateway.consultar_cobranca("pay_1")
         self.assertEqual(result.status, StatusPagamento.VENCIDO)
 
-    @respx.mock
+    @respx.mock(base_url="https://asaas.test")
     def test_estorno(self):
-        respx.post("https://asaas.test/v3/payments/pay_1/refund").mock(return_value=Response(200))
+        respx.post("/v3/payments/pay_1/refund").mock(return_value=Response(200))
         self.gateway.solicitar_estorno("pay_1")
 
     def test_autenticacao_e_traducao_webhook(self):
@@ -85,7 +85,7 @@ class AsaasGatewayTest(SimpleTestCase):
         )
         self.assertEqual(notification.status, StatusPagamento.PAGO)
 
-    @respx.mock
+    @respx.mock(base_url="https://asaas.test")
     def test_mapeia_erros_http(self):
         errors = (
             (401, CredencialInvalida),
@@ -94,20 +94,18 @@ class AsaasGatewayTest(SimpleTestCase):
             (500, GatewayIndisponivel),
         )
         for code, exception in errors:
-            respx.post("https://asaas.test/v3/payments").mock(return_value=Response(code))
+            respx.post("/v3/payments").mock(return_value=Response(code))
             with self.assertRaises(exception):
                 self.gateway.criar_cobranca(self.pedido)
             respx.reset()
 
-    @respx.mock
+    @respx.mock(base_url="https://asaas.test")
     def test_mapeia_recusa_e_timeout(self):
-        respx.post("https://asaas.test/v3/payments").mock(
-            return_value=Response(422, json={"errors": [{"description": "invalid"}]})
-        )
+        respx.post("/v3/payments").mock(return_value=Response(422, json={"errors": [{"description": "invalid"}]}))
         with self.assertRaises(RequisicaoRecusada):
             self.gateway.criar_cobranca(self.pedido)
 
-        route = respx.post("https://asaas.test/v3/payments").mock(side_effect=TimeoutError())
+        route = respx.post("/v3/payments").mock(side_effect=TimeoutError())
         with self.assertRaises(Exception):
             self.gateway.criar_cobranca(self.pedido)
         self.assertTrue(route.called)
