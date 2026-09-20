@@ -19,7 +19,6 @@ from payments.portas import DadosPagador, PedidoCobranca
 
 class AsaasGatewayTest(SimpleTestCase):
     def setUp(self):
-        self.gateway = AsaasGateway("https://asaas.test", "api-key", ["token123"])
         self.reference = uuid4()
         self.pedido = PedidoCobranca(
             referencia=self.reference,
@@ -30,8 +29,10 @@ class AsaasGatewayTest(SimpleTestCase):
             repasses=[],
         )
 
-    def tearDown(self):
-        self.gateway.client.close()
+    @property
+    def gateway(self):
+        # Create the client inside each respx context so httpx is intercepted.
+        return AsaasGateway("https://asaas.test", "api-key", ["token123"])
 
     @respx.mock
     def test_registrar_pagador(self):
