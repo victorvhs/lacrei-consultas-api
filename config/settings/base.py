@@ -1,4 +1,4 @@
-import os
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -15,6 +15,7 @@ env = environ.Env(
     GUNICORN_THREADS=(int, 2),
     PAYMENT_GATEWAY=(str, "fake"),
     REPASSE_PERCENTUAL_PADRAO=(int, 80),
+    APP_VERSION=(str, "dev"),
 )
 
 environ.Env.read_env(BASE_DIR / ".env", overwrite=True)
@@ -22,6 +23,7 @@ environ.Env.read_env(BASE_DIR / ".env", overwrite=True)
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+APP_VERSION = env("APP_VERSION")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -76,9 +78,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgres://lacrei:lacrei@db:5432/lacrei")
-}
+DATABASES = {"default": env.db("DATABASE_URL", default="postgres://lacrei:lacrei@db:5432/lacrei")}
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -119,8 +119,8 @@ REST_FRAMEWORK = {
     ],
     "EXCEPTION_HANDLER": "core.exceptions.custom_exception_handler",
     "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
+        "core.throttles.SharedAnonThrottle",
+        "core.throttles.SharedUserThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
         "anon": "20/min",
@@ -128,8 +128,6 @@ REST_FRAMEWORK = {
     },
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
-
-from datetime import timedelta
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
