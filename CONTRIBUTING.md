@@ -43,9 +43,20 @@ docs: atualiza ADR-008
 ```bash
 make lint
 make test
+make pre-push
 ```
 
-Cobertura mínima: 85%
+Cobertura mínima: 95%.
+
+Não faça push de uma feature sem executar `make pre-push`. Para testes de banco, o Docker Compose precisa estar ativo.
+
+## Governança
+
+- PRs devem usar Conventional Commits.
+- Mudanças comportamentais devem atualizar a spec correspondente.
+- Decisões arquiteturais entram em `doc/adr/`.
+- Operação e incidentes entram em `doc/DIARIO.md` ou no runbook aplicável.
+- Nunca incluir dados pessoais reais ou segredos em código, fixtures, logs ou prompts.
 
 ## PRs
 

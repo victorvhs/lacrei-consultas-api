@@ -1,0 +1,32 @@
+openapi: 3.0.3
+info:
+  title: Lacrei Saúde API
+  version: 1.0.0
+  description: API de gerenciamento de profissionais, consultas e pagamentos.
+servers:
+  - url: http://localhost:8000/api/v1
+paths:
+  /auth/token/:
+    post:
+      summary: Obtém tokens JWT
+      responses:
+        '200': {description: Tokens emitidos}
+  /auth/token/refresh/:
+    post:
+      summary: Renova access token
+      responses:
+        '200': {description: Token renovado}
+  /profissionais/:
+    get: {summary: Lista profissionais, responses: {'200': {description: Lista paginada}}}
+    post: {summary: Cria profissional, responses: {'201': {description: Criado}}}
+  /consultas/:
+    get: {summary: Lista consultas com filtros, responses: {'200': {description: Lista paginada}}}
+    post: {summary: Cria consulta, responses: {'201': {description: Criada}}}
+  /pagadores/:
+    post: {summary: Cadastra pagador, responses: {'201': {description: Criado}}}
+  /pagamentos/{id}/:
+    get: {summary: Detalha pagamento, parameters: [{in: path, name: id, required: true, schema: {type: string, format: uuid}}], responses: {'200': {description: Pagamento}}}
+  /health/live:
+    get: {summary: Liveness, security: [], responses: {'200': {description: Processo vivo}}}
+  /health/ready:
+    get: {summary: Readiness, security: [], responses: {'200': {description: Pronto}, '503': {description: Banco indisponível}}}

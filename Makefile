@@ -1,4 +1,4 @@
-.PHONY: setup up down up-payments superuser seed lint test build deploy rollback sim-pay sim-chaos tf-check
+.PHONY: setup up down up-payments superuser seed lint test openapi build deploy rollback sim-pay sim-chaos tf-check
 
 setup:
 	cp -n .env.example .env || true
@@ -25,6 +25,9 @@ lint:
 test:
 	poetry run coverage run manage.py test --settings=config.settings.test --verbosity=2
 	poetry run coverage report
+
+openapi:
+	poetry run python manage.py spectacular --file doc/openapi.yaml --validate
 
 build:
 	docker build -t lacrei-saude:$${APP_VERSION:-dev} .
