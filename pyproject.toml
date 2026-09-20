@@ -41,6 +41,7 @@ line-length = 120
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["N818", "UP042"]
 
 [tool.coverage.run]
 source = ["."]
