@@ -1,8 +1,23 @@
 import re
+import unicodedata
 import uuid
 
 from django.core.validators import validate_email
 from django.db import models
+
+
+def sanitize_text(value):
+    if value is None:
+        return value
+    value = unicodedata.normalize("NFC", str(value))
+    value = value.strip()
+    return value
+
+
+def contains_html(value):
+    if not value:
+        return False
+    return "<" in value or ">" in value
 
 
 class Professional(models.Model):
@@ -33,15 +48,27 @@ class Professional(models.Model):
 
         errors = {}
 
+        self.nome_social = sanitize_text(self.nome_social)
+        if not self.nome_social or len(self.nome_social) < 2:
+            errors["nome_social"] = "Nome social deve ter entre 2 e 150 caracteres."
+        elif len(self.nome_social) > 150:
+            errors["nome_social"] = "Nome social deve ter entre 2 e 150 caracteres."
+        elif contains_html(self.nome_social):
+            errors["nome_social"] = "Nome social não pode conter HTML."
+
+        self.profissao = sanitize_text(self.profissao)
+        if contains_html(self.profissao):
+            errors["profissao"] = "Profissão não pode conter HTML."
+
         if not self.email and not self.telefone:
             errors["email"] = "Profissional precisa de email ou telefone."
 
         if self.email:
+            self.email = sanitize_text(self.email).lower()
             try:
-                validate_email(self.email.lower())
+                validate_email(self.email)
             except Exception:
                 errors["email"] = "Email inválido."
-            self.email = self.email.lower().strip()
 
         if self.telefone:
             self.telefone = re.sub(r"\D", "", self.telefone)
@@ -54,18 +81,50 @@ class Professional(models.Model):
                 errors["cep"] = "CEP deve conter 8 dígitos."
 
         valid_ufs = [
-            "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
-            "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI",
-            "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+            "AC",
+            "AL",
+            "AP",
+            "AM",
+            "BA",
+            "CE",
+            "DF",
+            "ES",
+            "GO",
+            "MA",
+            "MT",
+            "MS",
+            "MG",
+            "PA",
+            "PB",
+            "PR",
+            "PE",
+            "PI",
+            "RJ",
+            "RN",
+            "RS",
+            "RO",
+            "RR",
+            "SC",
+            "SP",
+            "SE",
+            "TO",
         ]
-        if self.uf and self.uf.upper() not in valid_ufs:
-            errors["uf"] = "UF inválida."
-        self.uf = self.uf.upper() if self.uf else self.uf
+        if self.uf:
+            self.uf = self.uf.upper()
+            if self.uf not in valid_ufs:
+                errors["uf"] = "UF inválida."
 
-        if self.nome_social:
-            self.nome_social = self.nome_social.strip()
-            if "<" in self.nome_social or ">" in self.nome_social:
-                errors["nome_social"] = "Nome social não pode conter HTML."
+        self.logradouro = sanitize_text(self.logradouro)
+        self.bairro = sanitize_text(self.bairro)
+        self.cidade = sanitize_text(self.cidade)
+        self.complemento = sanitize_text(self.complemento) or ""
+
+        if contains_html(self.logradouro):
+            errors["logradouro"] = "Logradouro não pode conter HTML."
+        if contains_html(self.bairro):
+            errors["bairro"] = "Bairro não pode conter HTML."
+        if contains_html(self.cidade):
+            errors["cidade"] = "Cidade não pode conter HTML."
 
         if errors:
             raise ValidationError(errors)

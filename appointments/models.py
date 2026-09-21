@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.utils import timezone
 
 from professionals.models import Professional
 
@@ -13,9 +14,7 @@ class Appointment(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    profissional = models.ForeignKey(
-        Professional, on_delete=models.PROTECT, related_name="appointments"
-    )
+    profissional = models.ForeignKey(Professional, on_delete=models.PROTECT, related_name="appointments")
     data_hora = models.DateTimeField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="agendada")
     valor = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -30,11 +29,10 @@ class Appointment(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
-        from django.utils import timezone
 
         errors = {}
 
-        if not self.pk and self.data_hora <= timezone.now():
+        if self._state.adding and self.data_hora <= timezone.now():
             errors["data_hora"] = "data_hora deve ser no futuro."
 
         if self.valor is not None and self.valor <= 0:
@@ -51,3 +49,10 @@ class Appointment(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+    def can_transition_to(self, new_status):
+        if self.status == new_status:
+            return True
+        if self.status in ["cancelada", "realizada"] and new_status == "agendada":
+            return False
+        return True

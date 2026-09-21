@@ -32,6 +32,8 @@ curl -X POST http://localhost:8000/api/v1/auth/token/ \
 - **hml** → homologação (testes completos)
 - **dev** → desenvolvimento (CI validação básica)
 
+Pull requests para `dev` executam lint e testes. Pull requests para `hml` também executam build, Trivy e deploy efêmero. Runs antigos da mesma branch são cancelados automaticamente.
+
 ## Infraestrutura AWS
 
 Código Terraform em `infra/terraform/`. Não provisionado — ver `doc/DEPLOY_AWS.md`.
@@ -41,6 +43,26 @@ Código Terraform em `infra/terraform/`. Não provisionado — ver `doc/DEPLOY_A
 ```bash
 make rollback ENV=staging TAG=sha-abc1234
 ```
+
+Runbook completo: [`doc/ROLLBACK.md`](doc/ROLLBACK.md).
+
+## Qualidade local
+
+```bash
+make pre-push
+```
+
+O comando executa Ruff, import-linter, testes PostgreSQL e cobertura mínima de 95%. O CI deve confirmar o mesmo resultado antes do merge.
+
+## Documentação
+
+- OpenAPI: [`doc/openapi.yaml`](doc/openapi.yaml)
+- Deploy AWS: [`doc/DEPLOY_AWS.md`](doc/DEPLOY_AWS.md)
+- Pagamentos/Asaas: [`doc/ASAAS.md`](doc/ASAAS.md)
+- Rollback: [`doc/ROLLBACK.md`](doc/ROLLBACK.md)
+- ADRs: [`doc/adr/`](doc/adr/)
+- Diário: [`doc/DIARIO.md`](doc/DIARIO.md)
+- Uso de IA: [`doc/USO_DE_IA.md`](doc/USO_DE_IA.md)
 
 ## Uso de IA
 
