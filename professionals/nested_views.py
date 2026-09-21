@@ -24,7 +24,12 @@ class ProfessionalAppointmentsListView(generics.ListAPIView):
             Professional.objects.get(id=profissional_id)
         except (Professional.DoesNotExist, ValueError):
             return Response(
-                {"error": {"code": "not_found", "message": "Profissional não encontrado."}},
+                {
+                    "error": {
+                        "code": "not_found",
+                        "message": "Profissional não encontrado.",
+                    }
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )
         return super().list(request, *args, **kwargs)
