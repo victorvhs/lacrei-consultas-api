@@ -28,7 +28,7 @@ package-mode = false
 ruff = "^0.16"
 coverage = "^7.6"
 pip-audit = "^2.7"
-import-linter = "^2.0"
+import-linter = "^2.15"
 respx = "^0.23"
 
 [build-system]
