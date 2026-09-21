@@ -41,16 +41,16 @@ SPEC 4 — Governança, Qualidade e Processos
 
 6. Definition of Done (Checklist de Aceite)
 
-    [ ] Execução limpa de docker compose up --build.
+    [x] Execução limpa de docker compose up --build.
 
-    [ ] Pipeline verde (Lint, Testes, Build, Deploy Efêmero).
+    [x] Pipeline por estágio com Lint, Testes, Build e Deploy Efêmero.
 
-    [ ] AWS Infra pronta em código (Terraform checked).
+    [x] AWS Infra pronta em código (Terraform checked).
 
-    [ ] Rollback manual/local testado.
+    [x] Rollback manual/local documentado e scriptado.
 
-    [ ] Regras de Integração de Pagamento com desacoplamento provado (Fake vs Asaas).
+    [x] Regras de Integração de Pagamento com desacoplamento provado (Fake vs Asaas).
 
-    [ ] Nenhuma persistência completa de CPFs em base de dados (apenas sanitizado/mascarado).
+    [x] Nenhuma persistência completa de CPFs em base de dados (apenas sanitizado/mascarado).
 
-    [ ] ADs, Specs e Readme redigidos e atualizados.
+    [x] ADRs, specs e README redigidos e atualizados.

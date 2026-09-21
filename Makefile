@@ -1,4 +1,4 @@
-.PHONY: setup up down up-payments superuser seed lint test test-local pre-push build deploy rollback sim-pay sim-chaos tf-check
+.PHONY: setup up down up-payments superuser seed lint test test-local pre-push openapi build deploy rollback sim-pay sim-chaos tf-check
 
 setup:
 	cp -n .env.example .env || true
@@ -33,6 +33,9 @@ test-local:
 	poetry run coverage report --fail-under=95
 
 pre-push: lint test-local
+
+openapi:
+	poetry run python manage.py spectacular --file doc/openapi.yaml --validate
 
 build:
 	docker build -t lacrei-saude:$${APP_VERSION:-dev} .

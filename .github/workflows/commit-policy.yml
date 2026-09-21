@@ -1,0 +1,27 @@
+name: Commit Policy
+
+on:
+  pull_request:
+    branches: [main, dev, hml]
+
+concurrency:
+  group: commit-policy-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  conventional-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate commit subjects
+        shell: bash
+        run: |
+          pattern='^(feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\([a-z0-9._/-]+\))?: .+'
+          while IFS= read -r subject; do
+            if ! [[ "$subject" =~ $pattern ]]; then
+              echo "Invalid Conventional Commit: $subject"
+              exit 1
+            fi
+          done < <(git log --format=%s "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}")

@@ -48,6 +48,9 @@ jobs:
         run: poetry run lint-imports
         continue-on-error: true
 
+      - name: Validate OpenAPI document
+        run: test -s doc/openapi.yaml
+
   test:
     name: Test
     runs-on: ubuntu-latest
