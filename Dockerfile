@@ -1,4 +1,4 @@
-FROM python:3.12-slim AS base
+FROM python:3.14-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -25,7 +25,7 @@ COPY . .
 RUN mkdir -p /app/staticfiles && \
     poetry run python manage.py collectstatic --noinput --settings=config.settings.production
 
-FROM python:3.12-slim AS runtime
+FROM python:3.14-slim AS runtime
 
 RUN groupadd -g 1001 appuser && \
     useradd -u 1001 -g appuser -d /app -s /sbin/nologin appuser && \
